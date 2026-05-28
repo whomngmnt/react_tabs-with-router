@@ -4,17 +4,24 @@ import './App.scss';
 
 import classNames from 'classnames';
 import {
+  Tab as ReactTab,
+  TabList,
+  TabPanel,
+  Tabs as ReactTabs,
+} from 'react-tabs';
+import {
   HashRouter,
   Link,
   Navigate,
   Route,
   Routes,
   useLocation,
+  useNavigate,
   useParams,
 } from 'react-router-dom';
-import { Tab } from './types/Tab';
+import { Tab as TabData } from './types/Tab';
 
-const tabList: Tab[] = [
+const tabList: TabData[] = [
   {
     id: 'tab-1',
     title: 'Tab 1',
@@ -41,24 +48,33 @@ function NotFoundPage() {
 }
 
 function Tabs() {
+  const navigate = useNavigate();
   const { tabId } = useParams();
   const activeTab = tabList.find(tab => tab.id === tabId);
+  const activeTabIndex = tabList.findIndex(tab => tab.id === tabId);
 
   return (
     <>
-      <div className="tabs is-boxed">
-        <ul>
+      <ReactTabs
+        className="tabs is-boxed"
+        selectedIndex={activeTabIndex === -1 ? 0 : activeTabIndex}
+        selectedTabClassName={activeTab ? 'is-active' : ''}
+        onSelect={index => {
+          navigate(`/tabs/${tabList[index].id}`);
+        }}
+      >
+        <TabList>
           {tabList.map(tab => (
-            <li
-              key={tab.id}
-              data-cy="Tab"
-              className={classNames({ 'is-active': activeTab?.id === tab.id })}
-            >
+            <ReactTab key={tab.id} data-cy="Tab">
               <Link to={`/tabs/${tab.id}`}>{tab.title}</Link>
-            </li>
+            </ReactTab>
           ))}
-        </ul>
-      </div>
+        </TabList>
+
+        {tabList.map(tab => (
+          <TabPanel key={tab.id} />
+        ))}
+      </ReactTabs>
 
       <div className="block" data-cy="TabContent">
         {activeTab ? activeTab.content : 'Please select a tab'}
