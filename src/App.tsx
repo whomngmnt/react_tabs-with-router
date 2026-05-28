@@ -57,8 +57,8 @@ function Tabs() {
     <>
       <ReactTabs
         className="tabs is-boxed"
-        selectedIndex={activeTabIndex === -1 ? 0 : activeTabIndex}
-        selectedTabClassName={activeTab ? 'is-active' : ''}
+        selectedIndex={activeTabIndex}
+        selectedTabClassName="is-active"
         onSelect={index => {
           navigate(`/tabs/${tabList[index].id}`);
         }}
@@ -72,13 +72,19 @@ function Tabs() {
         </TabList>
 
         {tabList.map(tab => (
-          <TabPanel key={tab.id} />
+          <TabPanel key={tab.id}>
+            <div className="block" data-cy="TabContent">
+              {tab.content}
+            </div>
+          </TabPanel>
         ))}
       </ReactTabs>
 
-      <div className="block" data-cy="TabContent">
-        {activeTab ? activeTab.content : 'Please select a tab'}
-      </div>
+      {!activeTab && (
+        <div className="block" data-cy="TabContent">
+          Please select a tab
+        </div>
+      )}
     </>
   );
 }
